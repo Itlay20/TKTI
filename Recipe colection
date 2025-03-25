@@ -1,0 +1,65 @@
+// Recipe collection management
+
+export function useRecipeCollection() {
+  // Load completed recipes from localStorage (if available)
+  const loadCompletedRecipes = () => {
+    try {
+      const saved = localStorage.getItem('completedRecipes');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Error loading recipe collection:', e);
+      return [];
+    }
+  };
+
+  // Save completed recipes to localStorage
+  const saveCompletedRecipe = (recipe, score) => {
+    try {
+      const completed = loadCompletedRecipes();
+      
+      // Check if recipe already exists in collection
+      const existingIndex = completed.findIndex(item => item.id === recipe.id);
+      
+      if (existingIndex >= 0) {
+        // Update if new score is higher
+        if (score > completed[existingIndex].score) {
+          completed[existingIndex] = {
+            ...recipe,
+            score,
+            completedDate: new Date().toISOString()
+          };
+        }
+      } else {
+        // Add new entry
+        completed.push({
+          ...recipe,
+          score,
+          completedDate: new Date().toISOString()
+        });
+      }
+      
+      localStorage.setItem('completedRecipes', JSON.stringify(completed));
+      return completed;
+    } catch (e) {
+      console.error('Error saving recipe collection:', e);
+      return [];
+    }
+  };
+
+  // Get all completed recipes
+  const getCompletedRecipes = () => {
+    return loadCompletedRecipes();
+  };
+
+  // Check if a recipe is completed
+  const isRecipeCompleted = (recipeId) => {
+    const completed = loadCompletedRecipes();
+    return completed.some(recipe => recipe.id === recipeId);
+  };
+
+  return {
+    saveCompletedRecipe,
+    getCompletedRecipes,
+    isRecipeCompleted
+  };
+}
