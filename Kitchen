@@ -1,0 +1,83 @@
+import React from 'react';
+
+export default function Kitchen({ selectedIngredients, checkRecipe, cookingStatus }) {
+  return (
+    <div style={{
+      width: '50%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }}>
+      <div style={{
+        width: '220px',
+        height: '150px',
+        backgroundColor: '#D9D9D9',
+        borderRadius: '15px',
+        padding: '10px',
+        boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.2)',
+        position: 'relative',
+        marginBottom: '20px'
+      }}>
+        {/* Pot surface */}
+        <div style={{
+          position: 'absolute',
+          top: '15px',
+          left: '10px',
+          right: '10px',
+          height: '70px',
+          backgroundColor: '#FFE66D',
+          borderRadius: '100%',
+          zIndex: 1
+        }}></div>
+        
+        {/* Pot body */}
+        <div style={{
+          width: '200px',
+          height: '100px',
+          backgroundColor: '#6C757D',
+          borderRadius: '0 0 100px 100px',
+          position: 'absolute',
+          bottom: '10px',
+          left: '10px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          overflow: 'hidden'
+        }}>
+          {selectedIngredients.map((ing, idx) => (
+            <div key={idx} style={{
+              padding: '4px 8px',
+              backgroundColor: ing.color,
+              margin: '2px',
+              borderRadius: '10px',
+              fontSize: '12px',
+              boxShadow: '0 2px 3px rgba(0,0,0,0.1)'
+            }}>
+              {ing.emoji} {ing.name}
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <button 
+        onClick={checkRecipe}
+        disabled={cookingStatus !== 'idle'}
+        style={{
+          backgroundColor: '#4ECDC4',
+          color: 'white',
+          border: 'none',
+          padding: '10px 20px',
+          borderRadius: '25px',
+          cursor: cookingStatus === 'idle' ? 'pointer' : 'not-allowed',
+          boxShadow: '0 4px 8px rgba(78, 205, 196, 0.3)',
+          opacity: cookingStatus === 'idle' ? 1 : 0.7
+        }}
+      >
+        Masak!
+      </button>
+    </div>
+  );
+}
