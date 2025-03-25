@@ -1,0 +1,207 @@
+import React, { useState, useEffect } from 'react';
+
+export default function RecipeCard({ recipe, difficulty }) {
+  const [activeStep, setActiveStep] = useState(null);
+  const [animating, setAnimating] = useState(false);
+  return (
+    <div style={{
+      width: '45%',
+      backgroundColor: 'white',
+      borderRadius: '15px',
+      padding: '15px',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+    }}>
+      <h2 style={{ 
+        margin: '0 0 10px 0',
+        color: '#FF6B6B',
+        textAlign: 'center'
+      }}>
+        {recipe.emoji} {recipe.name}
+      </h2>
+      
+      <div style={{
+        margin: '15px 0',
+        padding: '10px',
+        backgroundColor: '#F9F9F9',
+        borderRadius: '10px'
+      }}>
+        <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>Bahan-bahan:</h3>
+        <ul style={{ 
+          padding: '0 0 0 20px',
+          margin: '5px 0'
+        }}>
+          {recipe.ingredients.map((ing, idx) => (
+            <li key={idx} style={{ margin: '5px 0' }}>
+              {ing.emoji} {ing.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+      
+      <div style={{
+        margin: '15px 0',
+        padding: '10px',
+        backgroundColor: '#F9F9F9',
+        borderRadius: '10px'
+      }}>
+        <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>Cara Membuat:</h3>
+        <ol style={{ 
+          padding: '0 0 0 20px',
+          margin: '5px 0'
+        }}>
+          {/* In hard mode, show fewer steps */}
+          {recipe.steps.map((step, idx) => (
+            <li key={idx} 
+                style={{ 
+                  margin: '5px 0',
+                  // In hard mode, show less information
+                  opacity: difficulty === 'hard' && idx > 1 ? 0.3 : 1,
+                  textDecoration: difficulty === 'hard' && idx > 1 ? 'line-through' : 'none',
+                  position: 'relative',
+                  transition: 'all 0.3s',
+                  padding: '5px',
+                  backgroundColor: activeStep === idx ? 'rgba(255, 230, 109, 0.2)' : 'transparent',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  if (activeStep === idx) {
+                    setActiveStep(null);
+                    setAnimating(false);
+                  } else {
+                    setActiveStep(idx);
+                    setAnimating(true);
+                    
+                    // Auto-reset animation after a while
+                    setTimeout(() => {
+                      setAnimating(false);
+                    }, 2000);
+                  }
+                }}
+            >
+              {/* Animation indicator */}
+              {activeStep === idx && (
+                <div style={{
+                  position: 'absolute',
+                  right: '-15px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#FF6B6B',
+                  fontSize: '16px',
+                  animation: animating ? 'cookingPulse 1s infinite' : 'none'
+                }}>
+                  <style>
+                    {`
+                      @keyframes cookingPulse {
+                        0% { opacity: 1; transform: translateY(-50%) scale(1); }
+                        50% { opacity: 0.6; transform: translateY(-50%) scale(1.2); }
+                        100% { opacity: 1; transform: translateY(-50%) scale(1); }
+                      }
+                      @keyframes stirring {
+                        0% { transform: rotate(0deg); }
+                        25% { transform: rotate(20deg); }
+                        75% { transform: rotate(-20deg); }
+                        100% { transform: rotate(0deg); }
+                      }
+                      @keyframes boiling {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-2px); }
+                      }
+                      @keyframes chopping {
+                        0%, 100% { transform: translateX(0); }
+                        25% { transform: translateX(-2px); }
+                        75% { transform: translateX(2px); }
+                      }
+                    `}
+                  </style>
+                  
+                  {/* Different animations based on step text */}
+                  {step.toLowerCase().includes('tumis') || step.toLowerCase().includes('aduk') ? (
+                    <span style={{ display: 'inline-block', animation: animating ? 'stirring 0.8s infinite' : 'none' }}>
+                      🥢
+                    </span>
+                  ) : step.toLowerCase().includes('rebus') || step.toLowerCase().includes('masak') ? (
+                    <span style={{ display: 'inline-block', animation: animating ? 'boiling 0.5s infinite' : 'none' }}>
+                      🔥
+                    </span>
+                  ) : step.toLowerCase().includes('potong') ? (
+                    <span style={{ display: 'inline-block', animation: animating ? 'chopping 0.3s infinite' : 'none' }}>
+                      🔪
+                    </span>
+                  ) : (
+                    <span>👨‍🍳</span>
+                  )}
+                </div>
+              )}
+              {/* In easy mode, highlight the important parts */}
+              {difficulty === 'easy' 
+                ? <span style={{
+                    backgroundColor: '#FFECB3',
+                    position: 'relative',
+                    zIndex: 1,
+                    display: 'inline-block',
+                    transition: 'transform 0.2s'
+                  }}>{step}</span> 
+                : <span style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    display: 'inline-block',
+                    transition: 'transform 0.2s'
+                  }}>{step}</span>
+              }
+              
+              {/* Show hint icons in easy mode */}
+              {difficulty === 'easy' && (
+                <span style={{
+                  marginLeft: '5px', 
+                  fontSize: '14px', 
+                  color: '#4ECDC4'
+                }}>
+                  ✓ {idx === 0 ? '(Mulai di sini)' : ''}
+                </span>
+              )}
+              
+              {/* "Tap to see" indicator */}
+              {activeStep !== idx && (
+                <small style={{
+                  display: 'block',
+                  fontSize: '10px',
+                  color: '#999',
+                  fontStyle: 'italic',
+                  marginTop: '2px'
+                }}>
+                  Tap untuk lihat animasi
+                </small>
+              )}
+            </li>
+          ))}
+        </ol>
+        
+        {/* Show difficulty specific tips */}
+        {difficulty === 'easy' && (
+          <div style={{
+            marginTop: '10px',
+            padding: '5px',
+            backgroundColor: '#E6F7FF',
+            borderRadius: '5px',
+            fontSize: '12px'
+          }}>
+            <p style={{margin: '0'}}>💡 <strong>Tips:</strong> Tambahkan bahan sesuai urutan resep untuk hasil terbaik!</p>
+          </div>
+        )}
+        
+        {difficulty === 'hard' && (
+          <div style={{
+            marginTop: '10px',
+            padding: '5px',
+            backgroundColor: '#FFEBEE',
+            borderRadius: '5px',
+            fontSize: '12px'
+          }}>
+            <p style={{margin: '0'}}>⚠️ <strong>Tantangan:</strong> Sebagian resep tersembunyi! Gunakan ingatan dan intuisimu.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
