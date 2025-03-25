@@ -1,0 +1,237 @@
+import React, { useState } from 'react';
+
+export default function IngredientShelf({ ingredients, onSelectIngredient }) {
+  const [hoveredIngredient, setHoveredIngredient] = useState(null);
+  const [shakeIndex, setShakeIndex] = useState(null);
+  // Handle ingredient selection with animation
+  const handleSelectIngredient = (ingredient, index) => {
+    // Trigger shake animation
+    setShakeIndex(index);
+    
+    // Reset shake after animation completes
+    setTimeout(() => {
+      setShakeIndex(null);
+    }, 500);
+    
+    // Add ingredient to pot
+    onSelectIngredient(ingredient);
+  };
+  return (
+    <div style={{
+      width: '90%',
+      backgroundColor: '#F8F9FA',
+      borderRadius: '15px',
+      padding: '10px',
+      display: 'flex',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      gap: '10px',
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.05)'
+    }}>
+      <style>
+        {`
+          @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg) scale(1.1); }
+            50% { transform: rotate(5deg) scale(1.1); }
+            75% { transform: rotate(-5deg) scale(1.1); }
+            100% { transform: rotate(0deg); }
+          }
+          @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+            50% { box-shadow: 0 0 15px rgba(255, 230, 109, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+          }
+          .ingredient-info {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            font-size: 12px;
+            z-index: 100;
+            width: max-content;
+            max-width: 150px;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+          }
+        `}
+      </style>
+      {ingredients.map((ing, idx) => (
+        <button
+          key={idx}
+          onClick={() => handleSelectIngredient(ing, idx)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '70px',
+            height: '70px',
+            backgroundColor: 'white',
+            border: '2px solid ' + ing.color,
+            borderRadius: '10px',
+            cursor: 'pointer',
+            transition: 'transform 0.2s, box-shadow 0.3s',
+            boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+            position: 'relative',
+            animation: shakeIndex === idx ? 'shake 0.5s' : 'none'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+            setHoveredIngredient(idx);
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+            setHoveredIngredient(null);
+          }}
+        >
+          <div style={{ 
+            fontSize: '24px',
+            transition: 'transform 0.3s', 
+            transform: hoveredIngredient === idx ? 'scale(1.2)' : 'scale(1)' 
+          }}>
+            {ing.emoji}
+          </div>
+          <div style={{ 
+            fontSize: '12px', 
+            marginTop: '5px',
+            fontWeight: hoveredIngredient === idx ? 'bold' : 'normal'
+          }}>
+            {ing.name}
+          </div>
+          
+          {/* Tooltip with ingredient info */}
+          <div 
+            className="ingredient-info"
+            style={{ 
+              opacity: hoveredIngredient === idx ? 1 : 0,
+              border: `2px solid ${ing.color}`
+            }}
+          >
+            <strong>{ing.name}</strong>
+            <div style={{ fontSize: '10px', marginTop: '3px', opacity: 0.7 }}>
+              Klik untuk menambahkan ke masakan
+            </div>
+          </div>
+        </button>
+      ))}
+      
+      {/* Some extras for variety - with the same interactive features */}
+      <button
+        onClick={() => handleSelectIngredient({name: 'Garam', emoji: '🧂', color: '#E9ECEF'}, 'garam')}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '70px',
+          height: '70px',
+          backgroundColor: 'white',
+          border: '2px solid #E9ECEF',
+          borderRadius: '10px',
+          cursor: 'pointer',
+          transition: 'transform 0.2s, box-shadow 0.3s',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+          position: 'relative',
+          animation: shakeIndex === 'garam' ? 'shake 0.5s' : 'none'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = 'scale(1.05)';
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+          setHoveredIngredient('garam');
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+          setHoveredIngredient(null);
+        }}
+      >
+        <div style={{ 
+          fontSize: '24px',
+          transition: 'transform 0.3s', 
+          transform: hoveredIngredient === 'garam' ? 'scale(1.2)' : 'scale(1)' 
+        }}>🧂</div>
+        <div style={{ 
+          fontSize: '12px', 
+          marginTop: '5px',
+          fontWeight: hoveredIngredient === 'garam' ? 'bold' : 'normal'
+        }}>Garam</div>
+        
+        <div 
+          className="ingredient-info"
+          style={{ 
+            opacity: hoveredIngredient === 'garam' ? 1 : 0,
+            border: '2px solid #E9ECEF'
+          }}
+        >
+          <strong>Garam</strong>
+          <div style={{ fontSize: '10px', marginTop: '3px', opacity: 0.7 }}>
+            Menambah rasa asin pada masakan
+          </div>
+        </div>
+      </button>
+      
+      <button
+        onClick={() => handleSelectIngredient({name: 'Lada', emoji: '🌶️', color: '#FA5252'}, 'lada')}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '70px',
+          height: '70px',
+          backgroundColor: 'white',
+          border: '2px solid #FA5252',
+          borderRadius: '10px',
+          cursor: 'pointer',
+          transition: 'transform 0.2s, box-shadow 0.3s',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+          position: 'relative',
+          animation: shakeIndex === 'lada' ? 'shake 0.5s' : 'none'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = 'scale(1.05)';
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+          setHoveredIngredient('lada');
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+          setHoveredIngredient(null);
+        }}
+      >
+        <div style={{ 
+          fontSize: '24px',
+          transition: 'transform 0.3s', 
+          transform: hoveredIngredient === 'lada' ? 'scale(1.2)' : 'scale(1)' 
+        }}>🌶️</div>
+        <div style={{ 
+          fontSize: '12px', 
+          marginTop: '5px',
+          fontWeight: hoveredIngredient === 'lada' ? 'bold' : 'normal' 
+        }}>Lada</div>
+        
+        <div 
+          className="ingredient-info"
+          style={{ 
+            opacity: hoveredIngredient === 'lada' ? 1 : 0,
+            border: '2px solid #FA5252'
+          }}
+        >
+          <strong>Lada</strong>
+          <div style={{ fontSize: '10px', marginTop: '3px', opacity: 0.7 }}>
+            Memberi sensasi pedas pada masakan
+          </div>
+        </div>
+      </button>
+    </div>
+  );
+}
