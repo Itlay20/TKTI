@@ -1,0 +1,172 @@
+import React from 'react';
+
+export default function GameEnd({ score, bestScore, completedRecipesCount, onRestart, onViewCollection }) {
+  return (
+    <div style={{
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      borderRadius: '15px',
+      padding: '30px',
+      width: '90%',
+      maxWidth: '500px',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+      textAlign: 'center',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Decorative confetti graphics at corners */}
+      <div style={{
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '60px',
+        height: '60px',
+        backgroundImage: 'radial-gradient(circle, #FFE66D 2px, transparent 3px), radial-gradient(circle, #FF6B6B 3px, transparent 4px), radial-gradient(circle, #4ECDC4 4px, transparent 5px)',
+        backgroundSize: '20px 20px',
+        backgroundPosition: '0 0, 10px 10px, 5px 5px',
+        transform: 'rotate(-45deg)'
+      }}></div>
+      
+      <div style={{
+        position: 'absolute',
+        bottom: '0',
+        right: '0',
+        width: '60px',
+        height: '60px',
+        backgroundImage: 'radial-gradient(circle, #4ECDC4 2px, transparent 3px), radial-gradient(circle, #FFE66D 3px, transparent 4px), radial-gradient(circle, #FF6B6B 4px, transparent 5px)',
+        backgroundSize: '20px 20px',
+        backgroundPosition: '0 0, 10px 10px, 5px 5px',
+        transform: 'rotate(135deg)'
+      }}></div>
+      
+      <h2 style={{
+        color: '#FF6B6B',
+        margin: '0 0 20px 0',
+        fontSize: '28px'
+      }}>
+        🎉 Game Selesai! 🎉
+      </h2>
+      
+      <div style={{
+        margin: '30px 0',
+        padding: '20px',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '15px',
+        boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.05)'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-around',
+          marginBottom: '20px'
+        }}>
+          <div>
+            <div style={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#4ECDC4'
+            }}>
+              {score}
+            </div>
+            <div style={{fontSize: '14px'}}>Skor</div>
+          </div>
+          
+          <div style={{ borderLeft: '1px dashed #ddd', height: '50px' }}></div>
+          
+          <div>
+            <div style={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#FFE66D'
+            }}>
+              {bestScore}
+            </div>
+            <div style={{fontSize: '14px'}}>Terbaik</div>
+          </div>
+          
+          <div style={{ borderLeft: '1px dashed #ddd', height: '50px' }}></div>
+          
+          <div>
+            <div style={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#FF6B6B'
+            }}>
+              {completedRecipesCount}
+            </div>
+            <div style={{fontSize: '14px'}}>Resep</div>
+          </div>
+        </div>
+        
+        <div style={{
+          backgroundColor: score > bestScore ? '#E6F7FF' : '#fff',
+          padding: '10px',
+          borderRadius: '10px',
+          fontSize: '14px',
+          border: score > bestScore ? '1px dashed #4ECDC4' : 'none'
+        }}>
+          {score > bestScore ? (
+            <span>🏆 <strong>Selamat!</strong> Kamu mencapai skor tertinggi baru!</span>
+          ) : (
+            <span>Terus berlatih untuk mencapai skor tertinggi!</span>
+          )}
+        </div>
+      </div>
+      
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '15px',
+        marginTop: '20px'
+      }}>
+        <button
+          onClick={onRestart}
+          style={{
+            backgroundColor: '#4ECDC4',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '25px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            boxShadow: '0 4px 8px rgba(78, 205, 196, 0.3)',
+            transition: 'all 0.2s'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 6px 12px rgba(78, 205, 196, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 8px rgba(78, 205, 196, 0.3)';
+          }}
+        >
+          Main Lagi
+        </button>
+        
+        <button
+          onClick={onViewCollection}
+          style={{
+            backgroundColor: '#FFE66D',
+            color: '#333',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '25px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            boxShadow: '0 4px 8px rgba(255, 230, 109, 0.3)',
+            transition: 'all 0.2s'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 6px 12px rgba(255, 230, 109, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 8px rgba(255, 230, 109, 0.3)';
+          }}
+        >
+          Lihat Koleksi Resep
+        </button>
+      </div>
+    </div>
+  );
+}
