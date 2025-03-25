@@ -1,0 +1,143 @@
+import React from 'react';
+
+export default function RecipeCollectionView({ completedRecipes, onBack }) {
+  return (
+    <div style={{
+      backgroundColor: 'white',
+      borderRadius: '15px',
+      padding: '20px',
+      width: '90%',
+      maxWidth: '800px',
+      boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+      maxHeight: '80vh',
+      overflow: 'auto'
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '20px',
+        borderBottom: '2px solid #FFE66D',
+        paddingBottom: '10px'
+      }}>
+        <h2 style={{ margin: 0, color: '#333' }}>🏆 Koleksi Resep Masakan</h2>
+        <button 
+          onClick={onBack}
+          style={{
+            backgroundColor: '#f1f1f1',
+            border: 'none',
+            borderRadius: '50%',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            fontSize: '18px'
+          }}
+        >
+          ✖
+        </button>
+      </div>
+
+      {completedRecipes.length === 0 ? (
+        <div style={{
+          textAlign: 'center',
+          padding: '40px 20px',
+          backgroundColor: '#f9f9f9',
+          borderRadius: '10px'
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '20px' }}>👨‍🍳</div>
+          <h3>Belum Ada Resep yang Diselesaikan</h3>
+          <p>Mulai memasak untuk mengumpulkan resep!</p>
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+          gap: '15px'
+        }}>
+          {completedRecipes.map((recipe) => (
+            <div 
+              key={recipe.id}
+              style={{
+                backgroundColor: '#f9f9f9',
+                borderRadius: '12px',
+                padding: '15px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
+                transition: 'transform 0.2s',
+                border: '2px solid #FFE66D'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.1)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.05)';
+              }}
+            >
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '10px'
+              }}>
+                <div style={{ fontSize: '32px', marginRight: '10px' }}>{recipe.emoji}</div>
+                <div>
+                  <h3 style={{ margin: '0 0 5px 0', color: '#FF6B6B' }}>{recipe.name}</h3>
+                  <div style={{
+                    backgroundColor: '#FFE66D',
+                    display: 'inline-block',
+                    padding: '3px 8px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: 'bold'
+                  }}>
+                    Skor: {recipe.score}
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{
+                fontSize: '12px',
+                color: '#666',
+                marginTop: '8px'
+              }}>
+                Diselesaikan: {new Date(recipe.completedDate).toLocaleDateString()}
+              </div>
+              
+              <div style={{
+                marginTop: '12px',
+                borderTop: '1px dashed #ddd',
+                paddingTop: '8px',
+                fontSize: '13px'
+              }}>
+                <div style={{ marginBottom: '5px' }}>Bahan-bahan:</div>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '5px'
+                }}>
+                  {recipe.ingredients.map((ing, idx) => (
+                    <span 
+                      key={idx}
+                      style={{
+                        backgroundColor: 'white',
+                        padding: '2px 6px',
+                        borderRadius: '10px',
+                        border: `1px solid ${ing.color}`,
+                        fontSize: '12px'
+                      }}
+                    >
+                      {ing.emoji} {ing.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
