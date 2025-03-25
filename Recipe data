@@ -1,0 +1,50 @@
+export const recipes = [
+  {
+    id: 1,
+    name: "Nasi Goreng",
+    emoji: "🍚",
+    ingredients: [
+      { name: "Beras", emoji: "🌾", color: "#F8F9D7" },
+      { name: "Telur", emoji: "🥚", color: "#FFF3BF" },
+      { name: "Bawang", emoji: "🧅", color: "#E5DBFF" }
+    ],
+    steps: [
+      "Masak nasi hingga matang",
+      "Tumis bawang hingga harum",
+      "Tambahkan telur dan aduk rata",
+      "Masukkan nasi dan aduk hingga matang"
+    ]
+  },
+  {
+    id: 2,
+    name: "Sup Ayam",
+    emoji: "🍲",
+    ingredients: [
+      { name: "Ayam", emoji: "🍗", color: "#FFE8CC" },
+      { name: "Wortel", emoji: "🥕", color: "#FFD8A8" },
+      { name: "Kentang", emoji: "🥔", color: "#E8D3B9" }
+    ],
+    steps: [
+      "Rebus ayam hingga empuk",
+      "Potong wortel dan kentang",
+      "Masukkan sayuran ke dalam kaldu",
+      "Masak hingga semua bahan matang"
+    ]
+  },
+  {
+    id: 3,
+    name: "Sate",
+    emoji: "🍢",
+    ingredients: [
+      { name: "Daging", emoji: "🥩", color: "#FFD8D8" },
+      { name: "Kacang", emoji: "🥜", color: "#E8D6A9" },
+      { name: "Kecap", emoji: "🍯", color: "#73615C" }
+    ],
+    steps: [
+      "Potong daging menjadi dadu kecil",
+      "Tusuk daging dengan tusuk sate",
+      "Bakar sate hingga matang",
+      "Siram dengan bumbu kacang dan kecap"
+    ]
+  }
+];
