@@ -1,0 +1,156 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useRecipeCollection } from 'recipeCollection';
+
+export function useGameState(recipes, difficulty = 'medium') {
+  const [gameState, setGameState] = useState('start');
+  const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
+  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  
+  // Set initial timer based on difficulty
+  const getInitialTimer = () => {
+    switch(difficulty) {
+      case 'easy': return 90;
+      case 'hard': return 30;
+      default: return 60; // medium
+    }
+  };
+  
+  const [timer, setTimer] = useState(getInitialTimer());
+  const [score, setScore] = useState(0);
+  const [cookingStatus, setCookingStatus] = useState('idle'); // idle, success, failure
+  const [bestScore, setBestScore] = useState(0);
+  const [completedRecipes, setCompletedRecipes] = useState([]);
+  
+  // Initialize recipe collection utilities
+  const { saveCompletedRecipe, getCompletedRecipes } = useRecipeCollection();
+
+  const currentRecipe = recipes[currentRecipeIndex];
+
+  // Load saved recipes and best score
+  useEffect(() => {
+    const savedRecipes = getCompletedRecipes();
+    setCompletedRecipes(savedRecipes);
+    
+    // Find best score from completed recipes
+    if (savedRecipes.length > 0) {
+      const maxScore = savedRecipes.reduce((max, recipe) => 
+        Math.max(max, recipe.score), 0);
+      setBestScore(maxScore);
+    }
+  }, []);
+  
+  // Start the game
+  const startGame = useCallback(() => {
+    setGameState('playing');
+    setTimer(getInitialTimer());
+    setScore(0);
+    setCurrentRecipeIndex(0);
+    setSelectedIngredients([]);
+    setCookingStatus('idle');
+  }, [difficulty]);
+
+  // Timer countdown
+  useEffect(() => {
+    let interval;
+    if (gameState === 'playing' && timer > 0) {
+      interval = setInterval(() => {
+        setTimer(prev => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setGameState('end');
+    }
+    
+    return () => clearInterval(interval);
+  }, [gameState, timer]);
+
+  // Select an ingredient
+  const selectIngredient = useCallback((ingredient) => {
+    if (cookingStatus !== 'idle') return;
+    
+    setSelectedIngredients(prev => [...prev, ingredient]);
+  }, [cookingStatus]);
+
+  // Check if the recipe is correctly made
+  const checkRecipe = useCallback(() => {
+    // Simple check - just check if all ingredients are selected, in any order
+    const requiredIngredients = currentRecipe.ingredients;
+    
+    // Check if we have all required ingredients
+    const hasAllIngredients = requiredIngredients.every(required => 
+      selectedIngredients.some(selected => selected.name === required.name)
+    );
+    
+    // Check if we have any extra ingredients
+    const hasExtraIngredients = selectedIngredients.length > requiredIngredients.length;
+    
+    if (hasAllIngredients && !hasExtraIngredients) {
+      setCookingStatus('success');
+      
+      // Score calculation based on difficulty
+      let pointsEarned = 10;
+      switch(difficulty) {
+        case 'easy':
+          pointsEarned = 5;
+          break;
+        case 'medium':
+          pointsEarned = 10;
+          break;
+        case 'hard':
+          pointsEarned = 20;
+          break;
+      }
+      
+      // Bonus points for remaining time (hard mode only)
+      if (difficulty === 'hard') {
+        const timeBonus = Math.floor(timer / 2);
+        pointsEarned += timeBonus;
+      }
+      
+      // Update score
+      const newScore = score + pointsEarned;
+      setScore(newScore);
+      
+      // Save completed recipe
+      const savedRecipes = saveCompletedRecipe(currentRecipe, newScore);
+      setCompletedRecipes(savedRecipes);
+      
+      // Update best score if needed
+      if (newScore > bestScore) {
+        setBestScore(newScore);
+      }
+    } else {
+      setCookingStatus('failure');
+      
+      // In hard mode, penalize for mistakes
+      if (difficulty === 'hard') {
+        setScore(prev => Math.max(0, prev - 5));
+      }
+    }
+  }, [currentRecipe, selectedIngredients, timer, difficulty]);
+
+  // Reset the recipe and move to next
+  const resetRecipe = useCallback(() => {
+    setSelectedIngredients([]);
+    setCookingStatus('idle');
+    
+    if (cookingStatus === 'success') {
+      // Move to next recipe
+      setCurrentRecipeIndex(prev => (prev + 1) % recipes.length);
+    }
+  }, [cookingStatus, recipes.length]);
+
+  return {
+    currentRecipe,
+    selectedIngredients,
+    timer,
+    score,
+    bestScore,
+    cookingStatus,
+    gameState,
+    completedRecipes,
+    selectIngredient,
+    checkRecipe,
+    resetRecipe,
+    startGame
+  };
+}
