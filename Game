@@ -1,0 +1,275 @@
+import React, { useState, useEffect } from 'react';
+import Kitchen from 'Kitchen';
+import RecipeCard from 'RecipeCard';
+import IngredientShelf from 'IngredientShelf';
+import GameEnd from 'GameEnd';
+import RecipeCollectionView from 'RecipeCollectionView';
+import { recipes } from 'recipeData';
+import { useGameState } from 'useGameState';
+
+export default function Game() {
+  const [difficulty, setDifficulty] = useState('medium'); // easy, medium, hard
+  
+  const [showCollection, setShowCollection] = useState(false);
+  
+  const { 
+    currentRecipe, 
+    selectedIngredients, 
+    timer, 
+    score, 
+    bestScore,
+    cookingStatus,
+    gameState,
+    completedRecipes,
+    selectIngredient,
+    checkRecipe,
+    resetRecipe,
+    startGame
+  } = useGameState(recipes, difficulty);
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100vh',
+      width: '100vw',
+      backgroundImage: 'linear-gradient(to bottom, #f9f9f9, #e6f7ff)',
+      fontFamily: 'Comic Sans MS, Arial, sans-serif',
+      color: '#333',
+      overflow: 'hidden'
+    }}>
+      <h1 style={{ margin: '10px 0' }}>🍳 Masak Yuk! 🍲</h1>
+      
+      {gameState === 'start' && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          backgroundColor: 'white',
+          padding: '20px',
+          borderRadius: '10px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+        }}>
+          <h2>Mari Mulai Memasak!</h2>
+          <p>Ikuti resep dan siapkan hidangan lezat</p>
+          
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            marginTop: '15px',
+            width: '100%'
+          }}>
+            <h3 style={{ textAlign: 'center', margin: '0 0 10px 0' }}>Pilih Tingkat Kesulitan:</h3>
+            
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              marginBottom: '20px'
+            }}>
+              <button 
+                onClick={() => setDifficulty('easy')}
+                style={{
+                  backgroundColor: difficulty === 'easy' ? '#4ECDC4' : '#e0e0e0',
+                  color: difficulty === 'easy' ? 'white' : '#333',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontWeight: difficulty === 'easy' ? 'bold' : 'normal',
+                  flex: 1,
+                  margin: '0 5px'
+                }}
+              >
+                Mudah
+              </button>
+              
+              <button 
+                onClick={() => setDifficulty('medium')}
+                style={{
+                  backgroundColor: difficulty === 'medium' ? '#FFE66D' : '#e0e0e0',
+                  color: difficulty === 'medium' ? '#333' : '#333',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontWeight: difficulty === 'medium' ? 'bold' : 'normal',
+                  flex: 1,
+                  margin: '0 5px'
+                }}
+              >
+                Sedang
+              </button>
+              
+              <button 
+                onClick={() => setDifficulty('hard')}
+                style={{
+                  backgroundColor: difficulty === 'hard' ? '#FF6B6B' : '#e0e0e0',
+                  color: difficulty === 'hard' ? 'white' : '#333',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontWeight: difficulty === 'hard' ? 'bold' : 'normal',
+                  flex: 1,
+                  margin: '0 5px'
+                }}
+              >
+                Sulit
+              </button>
+            </div>
+            
+            <div style={{
+              backgroundColor: '#F9F9F9',
+              padding: '10px',
+              borderRadius: '10px',
+              marginBottom: '15px',
+              fontSize: '14px'
+            }}>
+              {difficulty === 'easy' && (
+                <p style={{ margin: '0' }}>🟢 <strong>Mudah:</strong> Waktu lebih lama (90 detik), dan petunjuk yang jelas</p>
+              )}
+              {difficulty === 'medium' && (
+                <p style={{ margin: '0' }}>🟡 <strong>Sedang:</strong> Waktu standar (60 detik), petunjuk normal</p>
+              )}
+              {difficulty === 'hard' && (
+                <p style={{ margin: '0' }}>🔴 <strong>Sulit:</strong> Waktu singkat (30 detik), dan tantangan lebih!</p>
+              )}
+            </div>
+          </div>
+          
+          <button 
+            onClick={startGame}
+            style={{
+              backgroundColor: '#FF6B6B',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '25px',
+              fontSize: '18px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 8px rgba(255,107,107,0.3)',
+              marginTop: '5px',
+              width: '100%'
+            }}
+          >
+            Mulai Bermain
+          </button>
+        </div>
+      )}
+
+      {gameState === 'end' && (
+        <GameEnd 
+          score={score}
+          bestScore={bestScore}
+          completedRecipesCount={completedRecipes.length}
+          onRestart={() => startGame()}
+          onViewCollection={() => setShowCollection(true)}
+        />
+      )}
+      
+      {showCollection && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <RecipeCollectionView 
+            completedRecipes={completedRecipes}
+            onBack={() => setShowCollection(false)}
+          />
+        </div>
+      )}
+      
+      {gameState === 'playing' && (
+        <>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '80%',
+            margin: '10px 0'
+          }}>
+            <div style={{
+              backgroundColor: '#FFE66D',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              fontWeight: 'bold'
+            }}>
+              Skor: {score}
+            </div>
+            <div style={{
+              backgroundColor: timer < 10 ? '#FF6B6B' : '#4ECDC4',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              color: 'white',
+              fontWeight: 'bold'
+            }}>
+              Waktu: {timer}
+            </div>
+          </div>
+
+          <div style={{
+            display: 'flex',
+            width: '90%',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            height: '65vh'
+          }}>
+            <RecipeCard recipe={currentRecipe} difficulty={difficulty} />
+            <Kitchen 
+              selectedIngredients={selectedIngredients} 
+              checkRecipe={checkRecipe}
+              cookingStatus={cookingStatus}
+            />
+          </div>
+
+          <IngredientShelf 
+            ingredients={currentRecipe.ingredients} 
+            onSelectIngredient={selectIngredient}
+          />
+
+          {cookingStatus !== 'idle' && (
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: cookingStatus === 'success' ? 'rgba(78, 205, 196, 0.9)' : 'rgba(255, 107, 107, 0.9)',
+              padding: '20px',
+              borderRadius: '10px',
+              color: 'white',
+              textAlign: 'center',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+            }}>
+              <h2>{cookingStatus === 'success' ? 'Berhasil! 🎉' : 'Coba Lagi 😢'}</h2>
+              <p>{cookingStatus === 'success' ? 'Hidangan lezat!' : 'Bahan salah...'}</p>
+              <button
+                onClick={resetRecipe}
+                style={{
+                  backgroundColor: 'white',
+                  color: cookingStatus === 'success' ? '#4ECDC4' : '#FF6B6B',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  marginTop: '10px'
+                }}
+              >
+                {cookingStatus === 'success' ? 'Resep Berikutnya' : 'Coba Lagi'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
